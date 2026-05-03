@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUE Zaria — Matriculation Gallery 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-brand">
+    <div class="logo-circle">FUE</div>
+    <div>
+      <span class="brand-name">FUE ZARIA</span>
+      <span class="brand-sub">Matriculation Gallery</span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#gallery">Gallery</a>
+    <a href="#departments">Departments</a>
+    <a href="#about">About</a>
+    <button class="btn-admin" onclick="openAdmin()">Admin Login</button>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-badge">Class of 2024</p>
+    <h1 class="hero-title">Welcome to<br><span>FUE Zaria</span><br>Matriculation</h1>
+    <p class="hero-desc">Browse, download, like, and share your memorable matriculation photos from the Federal University of Engineering, Zaria.</p>
+    <div class="hero-btns">
+      <a href="#gallery" class="btn-primary">View Gallery</a>
+      <a href="#departments" class="btn-outline">Browse Departments</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong id="stat-photos">248</strong><span>Photos</span></div>
+      <div class="stat"><strong id="stat-views">1.2K</strong><span>Views</span></div>
+      <div class="stat"><strong id="stat-downloads">312</strong><span>Downloads</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="photo-stack">
+      <div class="stack-card s1"><div class="card-img cs-bg"></div></div>
+      <div class="stack-card s2"><div class="card-img cs-bg2"></div></div>
+      <div class="stack-card s3"><div class="card-img cs-bg3"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENTS -->
+<section id="departments" class="departments">
+  <div class="section-header">
+    <p class="section-label">Browse By</p>
+    <h2>Departments</h2>
+  </div>
+  <div class="dept-grid">
+    <div class="dept-card active" onclick="filterDept('cs')">
+      <div class="dept-icon">💻</div>
+      <h3>Computer Science</h3>
+      <p>248 photos</p>
+      <span class="dept-badge">Active</span>
+    </div>
+    <div class="dept-card coming" onclick="showComingSoon()">
+      <div class="dept-icon">⚙️</div>
+      <h3>Mechanical Eng.</h3>
+      <p>Coming Soon</p>
+    </div>
+    <div class="dept-card coming" onclick="showComingSoon()">
+      <div class="dept-icon">⚡</div>
+      <h3>Electrical Eng.</h3>
+      <p>Coming Soon</p>
+    </div>
+    <div class="dept-card coming" onclick="showComingSoon()">
+      <div class="dept-icon">🏗️</div>
+      <h3>Civil Engineering</h3>
+      <p>Coming Soon</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="gallery-section">
+  <div class="section-header">
+    <p class="section-label">Computer Science</p>
+    <h2>Matriculation Photos</h2>
+    <div class="gallery-controls">
+      <input type="text" id="searchInput" placeholder="Search by name..." oninput="filterGallery()" />
+      <select id="sortSelect" onchange="filterGallery()">
+        <option value="newest">Newest First</option>
+        <option value="popular">Most Liked</option>
+        <option value="downloads">Most Downloaded</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- Cards inserted by JS -->
+  </div>
+</section>
+
+<!-- VISITOR LOG (hidden, admin only) -->
+<div id="visitorLog" style="display:none"></div>
+
+<!-- ADMIN PANEL -->
+<div id="adminOverlay" class="overlay hidden">
+  <div class="admin-panel">
+    <button class="close-btn" onclick="closeAdmin()">✕</button>
+    <div id="adminLogin" class="admin-section">
+      <h2>Admin Login</h2>
+      <p>Department of Computer Science</p>
+      <input type="text" id="adminUser" placeholder="Username" />
+      <input type="password" id="adminPass" placeholder="Password" />
+      <button class="btn-primary full" onclick="doLogin()">Login</button>
+      <p class="login-hint">Default: admin / fue2024</p>
+    </div>
+    <div id="adminDash" class="admin-section hidden">
+      <h2>Admin Dashboard</h2>
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="switchTab('upload')">Upload Photos</button>
+        <button class="tab-btn" onclick="switchTab('visitors')">Visitors</button>
+        <button class="tab-btn" onclick="switchTab('downloads')">Downloads</button>
+        <button class="tab-btn" onclick="switchTab('settings')">Site Settings</button>
+      </div>
+
+      <!-- Upload Tab -->
+      <div id="tab-upload" class="tab-content">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+          <span class="upload-icon">📸</span>
+          <p>Click or drag photos here</p>
+          <span>Supports JPG, PNG, WEBP</span>
+        </div>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(event)">
+        <div class="upload-meta">
+          <input type="text" id="uploadName" placeholder="Student Name" />
+          <input type="text" id="uploadTag" placeholder="Tags (e.g. matric, cs2024)" />
+          <button class="btn-primary full" onclick="uploadPhoto()">Upload Photo</button>
+        </div>
+        <div id="uploadPreview" class="upload-preview"></div>
+      </div>
+
+      <!-- Visitors Tab -->
+      <div id="tab-visitors" class="tab-content hidden">
+        <h3>Recent Visitors</h3>
+        <table class="admin-table">
+          <thead><tr><th>Time</th><th>Page</th><th>Action</th></tr></thead>
+          <tbody id="visitorsTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Downloads Tab -->
+      <div id="tab-downloads" class="tab-content hidden">
+        <h3>Download Activity</h3>
+        <table class="admin-table">
+          <thead><tr><th>Time</th><th>Photo</th><th>Count</th></tr></thead>
+          <tbody id="downloadsTable"></tbody>
+        </table>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="tab-settings" class="tab-content hidden">
+        <h3>Edit Site Info</h3>
+        <label>Site Title</label>
+        <input type="text" id="siteTitle" value="FUE Zaria Matriculation Gallery" />
+        <label>Hero Message</label>
+        <textarea id="heroMsg" rows="3">Browse, download, like, and share your memorable matriculation photos.</textarea>
+        <label>Footer Credit</label>
+        <input type="text" id="footerCredit" value="Built by the Department of Computer Science — Mbello" />
+        <button class="btn-primary full" onclick="saveSettings()">Save Changes</button>
+        <hr style="margin:20px 0; border-color:#eee">
+        <h3>Manage Photos</h3>
+        <div id="adminGalleryList" class="admin-gallery-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="overlay hidden">
+  <div class="lightbox-inner">
+    <button class="close-btn" onclick="closeLightbox()">✕</button>
+    <img id="lbImage" src="" alt="">
+    <div class="lb-info">
+      <div>
+        <h3 id="lbName"></h3>
+        <p id="lbDept">Computer Science • FUE Zaria 2024</p>
+      </div>
+      <div class="lb-actions">
+        <button onclick="likePhoto(currentPhoto)" class="lb-btn like-btn" id="lbLikeBtn">❤️ <span id="lbLikes">0</span></button>
+        <button onclick="downloadPhoto(currentPhoto)" class="lb-btn">⬇️ Download</button>
+        <button onclick="sharePhoto(currentPhoto)" class="lb-btn">🔗 Share</button>
+      </div>
+    </div>
+    <div class="comments-section">
+      <h4>Comments</h4>
+      <div id="lbComments" class="comments-list"></div>
+      <div class="comment-input">
+        <input type="text" id="commentName" placeholder="Your name" />
+        <input type="text" id="commentText" placeholder="Write a comment..." />
+        <button onclick="addComment()" class="btn-primary">Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-circle small">FUE</div>
+      <div>
+        <strong>FUE Zaria Matriculation Gallery</strong>
+        <p>Federal University of Engineering, Zaria</p>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="#gallery">Gallery</a>
+      <a href="#departments">Departments</a>
+      <a href="#about">About</a>
+    </div>
+    <p class="footer-credit" id="footerCreditText">Built by the Department of Computer Science — Mbello</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
